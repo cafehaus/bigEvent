@@ -6,12 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>大事件-后台登录页</title>
+
+    <!-- 引入bootstrap样式文件 -->
+    <link rel="stylesheet" href="js/bootstrap/css/bootstrap.min.css">
+
     <link rel="stylesheet" type="text/css" href="css/reset.css">
     <link rel="stylesheet" type="text/css" href="css/iconfont.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
 
 <body>
+
+    <!-- 点击登录模态框 -->
+    <div id="myModal" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">提示信息</h4>
+                </div>
+                <div class="modal-body">
+                    <p>One fine body&hellip;</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 登录主页面 -->
     <div class="main_wrap">
         <div class="header">
             <a href="#" class="logo"><img src="images/logo.png" alt=""></a>
@@ -29,8 +52,83 @@
             </form>
         </div>
 
-    </div> 
+    </div>
 
 </body>
 
 </html>
+
+<!-- 引入jQuery和bootstrap框架的js文件 -->
+<script src="js/jquery-1.12.4.min.js"></script>
+<script src="js/bootstrap/js/bootstrap.min.js"></script>
+
+<script>
+    window.onload = function () {
+
+        // 禁止form表单的默认行为
+        document.querySelector('.login_form').onsubmit = function (e) {
+            var e = e || window.event;
+            e.preventDefault();
+        }
+
+        // 找到用户名、密码输入框和提交按钮
+        var inputTxt = document.querySelector('.input_txt');
+        var inputPass = document.querySelector('.input_pass');
+        var inputSub = document.querySelector('.input_sub');
+        // console.log(inputTxt,inputPass,inputSub);
+
+        // 给提交按钮添加点击事件
+        inputSub.onclick = function () {
+
+            // 获取用户名和密码的值，和模态框里的提示文本元素
+            var userName = inputTxt.value;
+            var userPass = inputPass.value;
+            var modalTip = document.querySelector('.modal-body p');
+
+
+            // 判断是否为空
+            if (userName == '' || userPass == '') {
+                modalTip.innerHTML = "用户名和密码不能为空";
+
+                // 调用弹出模态框方法，modal()是jQuery的方法，要先转换dom元素
+                // $('#myModal').modal();
+                $(document.querySelector('#myModal')).modal();
+                return;
+            }
+
+            // 用ajax请求登录接口
+
+            // 实例化ajax对象 小黄人
+            var xhr = new XMLHttpRequest();
+            // 设置请求的方法和地址
+            xhr.open('post', 'https://autumnfish.cn/big/admin/login');
+            // post的请求 设置请求头
+            xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            // 注册回调函数
+            xhr.onload = function () {
+                console.log(xhr.responseText);
+
+                // 判断返回码，登录成功为200，密码或用户名错误为400
+                var backCode = JSON.parse(xhr.responseText).code;
+                if (backCode == 400) {
+                    modalTip.innerHTML = "用户名或密码错误，请重新输入";
+                    // 调用弹出模态框方法
+                    $('#myModal').modal();
+
+                    return;
+                }else if(backCode == 200){
+                    modalTip.innerHTML = "登录成功";
+                    // 调用弹出模态框方法
+                    $('#myModal').modal();
+
+                    // 用一个定时器让弹出提示框1秒钟后再跳转页面
+                    setTimeout(function(){
+                        window.location.href = './index.html';
+                    },1000)
+                }
+            }
+            // 发送请求 post的 数据在send中传递
+            xhr.send('user_name=' + userName + '&password=' + userPass);
+        }
+    }
+</script>
