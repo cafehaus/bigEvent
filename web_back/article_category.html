@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/main.css">
     <script src="js/jquery-1.12.4.min.js"></script>
     <script src="js/bootstrap/js/bootstrap.min.js"></script>
+    <script src="js/template-web.js"></script>
 </head>
 
 <body>
@@ -28,8 +29,8 @@
                         <th class="text-center" width="100">操作</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
+                <tbody id="tbodyCategory">
+                    <!-- <tr>
                         <td>未分类</td>
                         <td>uncategorized</td>
                         <td class="text-center">
@@ -37,42 +38,13 @@
                                 class="btn btn-info btn-xs">编辑</a>
                             <a href="javascript:deleteTr( 1 );" class="btn btn-danger btn-xs">删除</a>
                         </td>
-                    </tr>
-
-                    <tr>
-                        <td>奇趣事</td>
-                        <td>funny</td>
-                        <td class="text-center">
-                            <a href="javascript:editTr({&quot;id&quot;:&quot;2&quot;,&quot;slug&quot;:&quot;funny&quot;,&quot;name&quot;:&quot;奇趣事&quot;});"
-                                class="btn btn-info btn-xs">编辑</a>
-                            <a href="javascript:deleteTr( 2 );" class="btn btn-danger btn-xs">删除</a>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>会生活</td>
-                        <td>living</td>
-                        <td class="text-center">
-                            <a href="javascript:editTr({&quot;id&quot;:&quot;3&quot;,&quot;slug&quot;:&quot;living&quot;,&quot;name&quot;:&quot;会生活&quot;});"
-                                class="btn btn-info btn-xs">编辑</a>
-                            <a href="javascript:deleteTr( 3 );" class="btn btn-danger btn-xs">删除</a>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>爱旅行</td>
-                        <td>travel</td>
-                        <td class="text-center">
-                            <a href="javascript:editTr({&quot;id&quot;:&quot;4&quot;,&quot;slug&quot;:&quot;travel&quot;,&quot;name&quot;:&quot;爱旅行&quot;});"
-                                class="btn btn-info btn-xs">编辑</a>
-                            <a href="javascript:deleteTr( 4 );" class="btn btn-danger btn-xs">删除</a>
-                        </td>
-                    </tr>
+                    </tr> -->
                 </tbody>
                 <tfoot>
                     <tr>
                         <td colspan="3" class="text-center">
-                            <a href="#" class="btn btn-success" data-toggle="modal" data-target="#addModal">新增分类</a>
+                            <a href="#" id="add_category" class="btn btn-success" data-toggle="modal"
+                                data-target="#addModal">新增分类</a>
                         </td>
                     </tr>
                 </tfoot>
@@ -80,56 +52,184 @@
         </div>
     </div>
 
-    <div class="modal fade" id="addModal" >
+    <div class="modal fade" id="addModal">
         <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
-              <h4 class="modal-title">新增分类</h4>
-            </div>
-            <div class="modal-body">
-              <form>
-                <div class="form-group">
-                  <label for="recipient-name" class="control-label">分类名称:</label>
-                  <input type="text" class="form-control" id="recipient-name">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                    <h4 class="modal-title">新增分类</h4>
                 </div>
-                <div class="form-group">
-                  <label for="message-text" class="control-label">分类别名:</label>
-                  <input type="text" class="form-control" id="recipient-name">
+                <div class="modal-body">
+                    <form>
+                        <input type="hidden" name="id" />
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">分类名称:</label>
+                            <input type="text" class="form-control" name="name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="control-label">分类别名:</label>
+                            <input type="text" class="form-control" name="slug">
+                        </div>
+                    </form>
                 </div>
-              </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="model_shutoff">关闭</button>
+                    <button type="button" class="btn btn-primary" id="model_add">新增</button>
+                </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" id="model_shutoff">关闭</button>
-              <button type="button" class="btn btn-primary" id="model_add">新增</button>
-            </div>
-          </div>
         </div>
-      </div>
+    </div>
 
-      <script>
-          $('#addModal').modal({
-            show:false,
-            backdrop:false
-          });
+    <!-- 定义分类列表模板，用each方法渲染到页面 -->
+    <script id="temp_category" type="text/html">
+        {{each data}}
+        <tr>
+            <td>{{$value.name}}</td>
+            <td>{{$value.slug}}</td>
+            <td class="text-center">
+                <a href='javascript:editTr({"id":"{{$value.id}}","slug":"{{$value.slug}}","name":"{{$value.name}}"});'
+                    class="btn btn-info btn-xs">编辑</a>
+                <a href="javascript:deleteTr($value.id);" class="btn btn-danger btn-xs">删除</a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
 
-          $('#model_shutoff').click(function(){
-            alert('shutoff');
-            $('#addModal').modal('hide');
-          });
+    <!-- 业务逻辑代码 -->
+    <script>
 
-          $('#model_add').click(function(){
-            alert('add');
-            $('#addModal').modal('hide');
-          });
+        $(function () {
 
-          $('.category_table').delegate('a','click',function(){
-              if($(this).hasClass('btn-info')){
-                $('#addModal .modal-title').html('修改分类名称');
-                $('#addModal').modal('show');
-              }
-          })      
-      </script>
+            // 函数封装：获取列表数据，并渲染到页面上
+            function getCategoryData() {
+
+                // 实例化ajax对象 小黄人
+                var xhr = new XMLHttpRequest();
+                // 设置请求的方法和地址
+                xhr.open('get', 'http://localhost:8000/admin/category_search');
+                // 注册回调函数
+                xhr.onload = function () {
+
+                    // 将获取到的分类数据渲染到模板里
+                    var categoryList = JSON.parse(xhr.responseText);
+                    var categoryHtml = template('temp_category', categoryList);
+                    // console.log(categoryList, categoryHtml);
+                    // 将模板内容添加到页面上
+                    var tbody = document.querySelector('.category_table>tbody');
+                    tbody.innerHTML = categoryHtml;
+                };
+                // 发送请求 post的 数据在send中传递
+                xhr.send();
+            }
+
+            // 先调用一次获取数据函数
+            getCategoryData();
+
+            // 点击底部的新增分类按钮
+            var addCategory = document.querySelector('#add_category');
+            addCategory.onclick = function () {
+                document.querySelector('.modal-title').innerHTML = "新增分类";
+                document.querySelector('#model_add').innerHTML = '新增';
+                document.querySelector('#model_add').classList.remove('edit-success');
+            }
+
+            // 给编辑按钮添加点击事件，引入按钮使用js添加到页面中的，直接给click事件不起作用，要用事件委托
+            // document.querySelector('#tbodyCategory').onclick = function (e) {
+
+            //     var target = e.target || e.srcElement;
+            //     console.log(target.className);
+
+            //     if (target.className.indexOf('btn-info') != -1) {
+
+            //         document.querySelector('.modal-title').innerHTML = "修改分类";
+            //         document.querySelector('#model_add').innerHTML = '修改';
+            //         document.querySelector('#model_add').classList.add('edit-success');
+            //     }
+            //     $('#addModal').modal('show');
+            // }
+
+            // 点击弹出框里的新增（/修改）按钮
+            document.querySelector('#model_add').onclick = function () {
+
+                // var formData = new FormData(document.querySelector('.modal-body>form'));
+                // console.log(formData);
+                var id = document.querySelector('.modal-body input[name="id"]').value;
+                var nameCate = document.querySelector('.modal-body input[name="name"]').value;
+                var slug = document.querySelector('.modal-body input[name="slug"]').value;
+
+
+                // 当是新增按钮时
+                if (this.className.indexOf('edit-success') == -1) {
+
+                    // 实例化ajax对象 小黄人
+                    var xhr = new XMLHttpRequest();
+                    // 设置请求的方法和地址
+                    xhr.open('post', 'http://localhost:8000/admin/category_add');
+                    // post的请求 设置请求头
+                    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                    // 注册回调函数
+                    xhr.onload = function () {
+                        console.log('我新增了');
+                        getCategoryData();
+                    };
+                    // 发送请求 post的 数据在send中传递
+                    xhr.send('name=' + nameCate + '&slug=' + slug);
+
+                } else {
+                    // 当是修改按钮时
+                    // 实例化ajax对象 小黄人
+                    var xhr = new XMLHttpRequest()
+                    // 设置请求的方法和地址
+                    xhr.open('post', "http://localhost:8000/admin/category_edit")
+                    // post的请求 设置请求头
+                    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+                    // 注册回调函数
+                    xhr.onload = function () {
+                        console.log('我编辑了');
+                        getCategoryData();
+                    };
+                    // 发送请求 post的 数据在send中传递
+                    xhr.send('id=' + id + '&name=' + nameCate + '&slug=' + slug);
+                }
+
+                $('#addModal').modal('hide');
+            }
+
+            window.editTr = function (data) {
+                console.log(data)
+
+                for (const key in data) {
+                    $('input[name=' + key + ']').val(data[key])
+                }
+            }
+            window.deleteTr = function (id) {
+
+                // 实例化ajax对象 小黄人
+                var xhr = new XMLHttpRequest();
+                // 设置请求的方法和地址
+                xhr.open('post', 'http://localhost:8000/admin/category_delete');
+                // post的请求 设置请求头
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                // 注册回调函数
+                xhr.onload = function () {
+                    getCategoryData();
+                };
+                // 发送请求 post的 数据在send中传递
+                xhr.send(id);
+            }
+
+
+            $('#addModal').modal({
+                show: false,
+                backdrop: false
+            });
+
+            $('#model_shutoff').click(function () {
+                // alert('shutoff');
+                $('#addModal').modal('hide');
+            });
+        })     
+    </script>
 
 </body>
 
