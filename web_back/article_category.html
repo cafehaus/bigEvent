@@ -89,7 +89,7 @@
             <td class="text-center">
                 <a href='javascript:editTr({"id":"{{$value.id}}","slug":"{{$value.slug}}","name":"{{$value.name}}"});'
                     class="btn btn-info btn-xs">编辑</a>
-                <a href="javascript:deleteTr($value.id);" class="btn btn-danger btn-xs">删除</a>
+                <a href="javascript:deleteTr({{$value.id}});" class="btn btn-danger btn-xs">删除</a>
             </td>
         </tr>
         {{/each}}
@@ -128,25 +128,31 @@
             // 点击底部的新增分类按钮
             var addCategory = document.querySelector('#add_category');
             addCategory.onclick = function () {
+
+                // 每次点击新增按钮时，先将表单元素李的value值清空
+                document.querySelector('.modal-body input[name="id"]').value = '';
+                document.querySelector('.modal-body input[name="name"]').value = '';
+                document.querySelector('.modal-body input[name="slug"]').value = '';
+
                 document.querySelector('.modal-title').innerHTML = "新增分类";
                 document.querySelector('#model_add').innerHTML = '新增';
                 document.querySelector('#model_add').classList.remove('edit-success');
             }
 
             // 给编辑按钮添加点击事件，引入按钮使用js添加到页面中的，直接给click事件不起作用，要用事件委托
-            // document.querySelector('#tbodyCategory').onclick = function (e) {
+            document.querySelector('#tbodyCategory').onclick = function (e) {
 
-            //     var target = e.target || e.srcElement;
-            //     console.log(target.className);
+                var target = e.target || e.srcElement;
+                console.log(target.className);
 
-            //     if (target.className.indexOf('btn-info') != -1) {
+                if (target.className.indexOf('btn-info') != -1) {
 
-            //         document.querySelector('.modal-title').innerHTML = "修改分类";
-            //         document.querySelector('#model_add').innerHTML = '修改';
-            //         document.querySelector('#model_add').classList.add('edit-success');
-            //     }
-            //     $('#addModal').modal('show');
-            // }
+                    document.querySelector('.modal-title').innerHTML = "修改分类";
+                    document.querySelector('#model_add').innerHTML = '修改';
+                    document.querySelector('#model_add').classList.add('edit-success');
+                    $('#addModal').modal('show');
+                }
+            }
 
             // 点击弹出框里的新增（/修改）按钮
             document.querySelector('#model_add').onclick = function () {
@@ -195,6 +201,7 @@
                 $('#addModal').modal('hide');
             }
 
+            // 点击编辑按钮，将当前分类的值填充到弹出框中
             window.editTr = function (data) {
                 console.log(data)
 
@@ -202,20 +209,27 @@
                     $('input[name=' + key + ']').val(data[key])
                 }
             }
+
+            // 点击删除按钮，删除分类
             window.deleteTr = function (id) {
 
-                // 实例化ajax对象 小黄人
-                var xhr = new XMLHttpRequest();
-                // 设置请求的方法和地址
-                xhr.open('post', 'http://localhost:8000/admin/category_delete');
-                // post的请求 设置请求头
-                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-                // 注册回调函数
-                xhr.onload = function () {
-                    getCategoryData();
-                };
-                // 发送请求 post的 数据在send中传递
-                xhr.send(id);
+                // 弹出一个框让用户确认是不是要删除
+                var conf = confirm('你确定要删除这个分类吗？');
+
+                if (conf) {
+                    // 实例化ajax对象 小黄人
+                    var xhr = new XMLHttpRequest();
+                    // 设置请求的方法和地址
+                    xhr.open('post', 'http://localhost:8000/admin/category_delete');
+                    // post的请求 设置请求头
+                    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                    // 注册回调函数
+                    xhr.onload = function () {
+                        getCategoryData();
+                    };
+                    // 发送请求 post的 数据在send中传递
+                    xhr.send('id='+id);
+                }
             }
 
 

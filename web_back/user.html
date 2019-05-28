@@ -97,7 +97,7 @@
             // 实例化ajax对象 小黄人
             var xhr = new XMLHttpRequest();
             // 设置请求的方法和地址
-            xhr.open('get', 'https://autumnfish.cn/big/admin/userinfo_get');
+            xhr.open('get', 'http://localhost:8000/admin/userinfo_get');
             // post的请求 设置请求头
             // xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
             // 注册回调函数
@@ -148,7 +148,7 @@
                 // 实例化ajax对象 小黄人
                 var xhr = new XMLHttpRequest();
                 // 设置请求的方法和地址
-                xhr.open('post', 'https://autumnfish.cn/big/admin/userinfo_edit', true);
+                xhr.open('post', 'http://localhost:8000/admin/userinfo_edit', true);
                 // post的请求 设置请求头（如果用formData提交数据，就不要设置请求头）
                 // xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                 // 注册回调函数

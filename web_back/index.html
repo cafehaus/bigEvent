@@ -163,7 +163,7 @@
                     // 实例化ajax对象 小黄人
                     var xhr = new XMLHttpRequest();
                     // 设置请求的方法和地址
-                    xhr.open('post', 'https://autumnfish.cn/big/admin/logout');
+                    xhr.open('post', 'http://localhost:8000/admin/logout');
                     // post的请求 设置请求头
                     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
                     // 注册回调函数
@@ -182,6 +182,29 @@
                     xhr.send();
                 }
             }
+        })
+
+        // 从服务器请求数据，将顶部两边的默认头像和昵称改成最新的
+        $(function(){
+
+            // 实例化ajax对象 小黄人
+            var xhr = new XMLHttpRequest();
+            // 设置请求的方法和地址
+            xhr.open('get','http://localhost:8000/admin/userinfo_get');
+            // post的请求 设置请求头
+            // xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+            // 注册回调函数
+            xhr.onload = function(){
+                var userInfo = JSON.parse(xhr.responseText);
+                console.log(userInfo);
+
+                // 设置头像和用户名
+                document.querySelector('.user_center_link>img').src = userInfo.data.user_pic;
+                document.querySelector('.user_info>img').src = userInfo.data.user_pic;
+                document.querySelector('.user_info>span').innerHTML = '欢迎 '+userInfo.data.username;            
+            };
+            // 发送请求 post的 数据在send中传递
+            xhr.send();
         })
     
     </script>
